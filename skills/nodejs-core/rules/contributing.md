@@ -96,34 +96,20 @@ git checkout -b fix-issue-12345
 
 ### Commit Message Format
 
+Use [commit-messages.md](commit-messages.md) for the evidence-based Node.js
+house style and current DCO requirements. The default authored form is:
+
+```text
+subsystem[,subsystem...]: imperative description
+
+Optional explanation of the previous behavior and why the change is needed.
+
+Signed-off-by: Human Contributor <human@example.com>
 ```
-subsystem: short description
 
-Longer explanation of the change if needed.
-Can span multiple paragraphs.
-
-Fixes: https://github.com/nodejs/node/issues/12345
-Refs: https://github.com/nodejs/node/pull/12344
-```
-
-Examples:
-
-```
-# Bug fix
-fs: fix race condition in readdir
-
-# New feature
-stream: add toArray method
-
-# Test
-test: add missing coverage for http
-
-# Documentation
-doc: clarify buffer.slice behavior
-
-# Build
-build: fix gyp warnings on Windows
-```
+Create the sign-off with `git commit -s`; never fabricate another person's
+identity. Put full-URL `Fixes:` and `Refs:` lines in the pull request body so
+the landing process can add them to the landed commit.
 
 ### Code Style
 
@@ -171,97 +157,90 @@ node benchmark/fs/readfile.js
 
 ### Creating a PR
 
+Use the terse style in
+[pull-request-descriptions.md](pull-request-descriptions.md). Write the body to
+a file so Markdown is preserved:
+
 ```bash
-# Push to your fork
+# Push to your fork.
 git push origin fix-issue-12345
 
-# Create PR via GitHub CLI
+cat > /tmp/pr-body.md <<'EOF'
+Prevent concurrent readdir operations from reusing a closed request handle.
+The regression test exercises the overlapping-call path.
+
+Fixes: https://github.com/nodejs/node/issues/12345
+EOF
+
 gh pr create \
-  --title "fs: fix race condition in readdir" \
-  --body "Fixes #12345
-
-This PR addresses the race condition in fs.readdir() by...
-
-**Test plan:**
-- Added test in test/parallel/test-fs-readdir-race.js
-- Ran existing fs tests
-"
+  --repo nodejs/node \
+  --base main \
+  --head YOUR_USERNAME:fix-issue-12345 \
+  --title "fs: avoid reusing closed readdir requests" \
+  --body-file /tmp/pr-body.md
 ```
 
 ### PR Requirements
 
-1. **Tests**: Must include tests for changes
-2. **Documentation**: Update docs for new features
-3. **Commits**: Clean, atomic commits with proper format
-4. **CI**: All CI checks must pass
-5. **Review**: At least one collaborator approval
+1. **Tests**: Include tests for bug fixes and new features.
+2. **Documentation**: Update documentation for public behavior and APIs.
+3. **Commits**: Keep logical changes self-contained and signed off.
+4. **CI**: Required CI must pass; inspect failures rather than assuming they
+   are unrelated.
+5. **Review**: Two collaborator approvals are normally required; one is enough
+   after the PR has been open for more than seven days.
+6. **Wait time**: Leave non-trivial changes open for at least 48 hours.
 
 ### CI Checks
 
-PRs run through extensive CI:
-
-```
-├── lint (code style)
-├── test-linux (Ubuntu)
-├── test-macos
-├── test-windows
-├── test-asan (Address Sanitizer)
-├── test-valgrind
-└── coverage
-```
+Code changes must pass the Node.js CI runs triggered by collaborators or
+triagers. Inspect every failure to distinguish regressions from known flaky
+tests or infrastructure failures; rerun CI after new code is pushed.
 
 ### Addressing Review Feedback
 
-```bash
-# Make changes based on review
-git add .
-git commit -m "address review feedback"
-git push origin fix-issue-12345
+Keep review updates visible. Do not squash approved commits merely to make the
+PR look tidy; the landing process normally handles autosquashing. A fixup
+commit can identify its target explicitly:
 
-# Squash if needed
-git rebase -i HEAD~3
-git push --force origin fix-issue-12345
+```bash
+git add my/changed/files
+git commit --fixup <target-commit>
+git push origin fix-issue-12345
 ```
+
+Rebase onto upstream only when needed, and use `--force-with-lease` rather than
+`--force` after rewriting branch history.
 
 ## Landing Process
 
-### For Collaborators
+Collaborators should use the commit queue or `git node land`; they must not use
+GitHub's green merge button. Before landing:
 
-```bash
-# Fetch PR
-git fetch upstream pull/12345/head:pr-12345
-git checkout pr-12345
+1. Confirm required approvals, wait time, and green CI.
+2. Validate the final commit message and human DCO sign-off.
+3. Add landing metadata from the PR and its reviews.
+4. Usually squash to one logical change; preserve several commits only when
+   each is self-contained and passes all tests.
 
-# Review changes
-git log upstream/main..HEAD
-git diff upstream/main
+The landing process produces `PR-URL:`, `Reviewed-By:`, and other final
+metadata. Authors should not invent it in the PR description.
 
-# Land (after approval)
-git checkout main
-git pull upstream main
-git merge --squash pr-12345
+```text
+subsystem: imperative description
 
-# Add metadata
-git commit --amend
-# Add: PR-URL: https://github.com/nodejs/node/pull/12345
-# Add: Reviewed-By: Name <email>
+Optional rationale.
 
-# Push
-git push upstream main
-```
-
-### Commit Metadata
-
-```
-subsystem: description
-
-Detailed explanation of the change.
-
+Signed-off-by: Human Contributor <human@example.com>
 PR-URL: https://github.com/nodejs/node/pull/12345
 Fixes: https://github.com/nodejs/node/issues/12344
-Reviewed-By: James M Snell <jasnell@gmail.com>
-Reviewed-By: Anna Henningsen <anna@addaleax.net>
+Reviewed-By: Reviewer Name <reviewer@example.com>
 ```
+
+See the pinned
+[collaborator guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/collaborator-guide.md#landing-pull-requests)
+and [commit queue guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/commit-queue.md)
+for the current landing workflow.
 
 ## Governance
 
@@ -407,7 +386,7 @@ git commit --amend
 
 ## Resources
 
-- Contributing guide: https://github.com/nodejs/node/blob/main/CONTRIBUTING.md
-- Collaborator guide: https://github.com/nodejs/node/blob/main/doc/guides/collaborator-guide.md
-- C++ style guide: https://github.com/nodejs/node/blob/main/doc/guides/cpp-style-guide.md
-- Building: https://github.com/nodejs/node/blob/main/BUILDING.md
+- [Contributing guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/CONTRIBUTING.md)
+- [Collaborator guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/collaborator-guide.md)
+- [C++ style guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/cpp-style-guide.md)
+- [Building Node.js](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/BUILDING.md)

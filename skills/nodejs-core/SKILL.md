@@ -1,8 +1,8 @@
 ---
 name: nodejs-core
-description: Debugs native module crashes, optimizes V8 performance, configures node-gyp builds, writes N-API/node-addon-api bindings, and diagnoses libuv event loop issues in Node.js. Use when working with C++ addons, native modules, binding.gyp, node-gyp errors, segfaults, memory leaks in native code, V8 optimization/deoptimization, libuv thread pool tuning, N-API or NAN bindings, build system failures, or any Node.js internals below the JavaScript layer.
+description: Contributes to and debugs Node.js core, including nodejs/node commit and PR tone, contribution workflows, native crashes, V8 performance, node-gyp builds, N-API bindings, and libuv issues. Use when drafting or reviewing a Node.js core commit or pull request, working in nodejs/node, or diagnosing C++ addons, binding.gyp failures, segfaults, native leaks, V8 deoptimizations, and event-loop internals.
 metadata:
-  tags: nodejs, v8, libuv, cpp, native-addons, performance, debugging, internals
+  tags: nodejs, nodejs-core, contributing, commit-message, pull-request, v8, libuv, cpp, native-addons, performance, debugging, internals
 ---
 
 ## When to use
@@ -15,6 +15,7 @@ Use this skill when you need deep Node.js internals expertise, including:
 - Compilation failures
 - Performance optimization at the engine level
 - Understanding Node.js core architecture
+- Writing or reviewing `nodejs/node` commits and pull request descriptions
 
 ## How to use
 
@@ -58,8 +59,9 @@ Read individual rule files for detailed explanations and code examples:
 - [rules/build-system.md](rules/build-system.md) - gyp, ninja, make, cross-platform compilation
 - [rules/cli-options.md](rules/cli-options.md) - Adding CLI options and gating experimental modules
 - [rules/contributing.md](rules/contributing.md) - How to contribute to Node.js core, the process
-- [rules/commit-messages.md](rules/commit-messages.md) - Node.js-style commit message formatting and validation
-- [rules/reviewing-prs.md](rules/reviewing-prs.md) - Reviewing PRs, quality signals, and spotting low-quality AI-generated contributions
+- [rules/commit-messages.md](rules/commit-messages.md) - Node.js commit style derived from 2024-2025 history and current requirements
+- [rules/pull-request-descriptions.md](rules/pull-request-descriptions.md) - Node.js PR title/body style derived from merged 2024-2025 PRs
+- [rules/reviewing-prs.md](rules/reviewing-prs.md) - Reviewing PRs for correctness, clarity, and contribution quality
 
 ### Documentation
 
@@ -72,6 +74,16 @@ Read individual rule files for detailed explanations and code examples:
 - [rules/memory-debugging.md](rules/memory-debugging.md) - Heap snapshots, memory leak detection
 
 ## Instructions
+
+### Node.js contribution writing
+
+When drafting a `nodejs/node` commit or pull request, read
+[rules/commit-messages.md](rules/commit-messages.md) and
+[rules/pull-request-descriptions.md](rules/pull-request-descriptions.md).
+Use terse subsystem-prefixed titles and plain, matter-of-fact prose. Lead with
+concrete behavior, explain the reason for the change, and omit hype, canned
+headings, file-by-file narration, and unsupported claims. Include the
+contributor's DCO sign-off.
 
 ### MANDATORY: Rebuild before testing
 

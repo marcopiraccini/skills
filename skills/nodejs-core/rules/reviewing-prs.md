@@ -1,30 +1,14 @@
 ---
 name: reviewing-prs
-description: How to review Node.js core pull requests, including spotting low-quality AI-generated contributions
+description: How to review Node.js core pull requests for correctness, clear technical writing, project conventions, and contribution quality
 metadata:
-  tags: review, pull-request, contributing, quality, ai-generated
+  tags: review, pull-request, contributing, quality, writing
 ---
 
 # Reviewing Pull Requests
 
-A guide for reviewing contributions to the Node.js project, covering
-technical quality, project conventions, and identifying contributions where
-the author may not understand their own code.
-
-## The Node.js contribution model
-
-The Node.js project welcomes AI-assisted contributions. What it does not
-accept is AI-authored contributions where the contributor cannot explain,
-defend, or maintain their own code. Every contributor must be able to:
-
-- Explain what their change does and why this approach was chosen
-- Respond substantively to review feedback (not just "fixed, thanks")
-- Understand the implications of their change on existing behavior
-- Take ownership of their contribution going forward
-
-This applies regardless of how the code was produced. The concern is not
-whether AI was used, but whether the contributor understands what they are
-submitting.
+A guide for reviewing contributions to the Node.js project, covering technical
+quality, writing clarity, and project conventions.
 
 ## Technical review checklist
 
@@ -36,9 +20,24 @@ During review, check:
 - Correct subsystem prefix (`fs:`, `stream:`, `http:`, `test:`, `doc:`, etc.)
 - Short imperative description on the first line
 - Body explains *why* the change is needed, not just *what* it does
-- `Fixes:` and `Refs:` footers are used correctly (Fixes closes an issue,
-  Refs links related work without closing)
-- No AI attribution lines (`Co-Authored-By: Claude`, etc.)
+- Full-URL `Fixes:` and `Refs:` lines in the PR description use the correct
+  semantics (`Fixes` closes; `Refs` only relates)
+- Human-authored commits contain the contributor's DCO `Signed-off-by` line
+
+### Pull request text
+
+See [pull-request-descriptions.md](pull-request-descriptions.md) for the full
+style. During review, check:
+
+- The title is a concise candidate commit subject.
+- The opening gives context missing from the title instead of restating it.
+- The body names the previous and changed behavior in concrete terms.
+- The rationale, limitations, uncertainty, and benchmark evidence are included
+  when they affect whether the change should land.
+- The prose is plain and matter-of-fact, without hype, canned sections,
+  file-by-file narration, or unsupported claims.
+- A routine PR stays short; a complex PR uses only the structure needed to make
+  the design reviewable.
 
 ### Scope
 
@@ -91,11 +90,9 @@ During review, check:
 - For new `lib/` files: is `./configure` needed? (configure discovers JS
   files for `js2c`)
 
-## Signs of a PR that lacks contributor understanding
+## Quality red flags
 
-These patterns suggest the contributor may not fully understand what they
-are submitting. They apply regardless of whether AI was used — the issue
-is quality and ownership, not tooling.
+These patterns identify concrete review risks and unclear technical writing.
 
 ### Commit message red flags
 
@@ -109,16 +106,12 @@ is quality and ownership, not tooling.
 
 ### Code red flags
 
-- **Hallucinated APIs**: using functions, options, error codes, or
-  conventions that don't exist in the Node.js codebase. This is the
-  strongest signal — a contributor who wrote or understood the code would
-  not reference non-existent APIs
-- **Inconsistent convention adherence**: parts of the PR follow Node.js
-  conventions perfectly (primordials, validators, error codes) while other
-  parts don't, suggesting piecemeal generation
+- **Non-existent APIs**: using functions, options, error codes, or conventions
+  that do not exist in the Node.js codebase
+- **Inconsistent convention adherence**: some files use Node.js primordials,
+  validators, and error codes correctly while adjacent changes do not
 - **Over-engineering**: adding unnecessary abstraction, extra classes, or
-  complexity for a straightforward fix. AI agents tend to add structure
-  that isn't needed
+  complexity for a straightforward fix
 - **Boilerplate-heavy code**: excessive JSDoc comments, unnecessary type
   annotations, or verbose variable names that are inconsistent with the
   surrounding code's style
@@ -148,23 +141,17 @@ is quality and ownership, not tooling.
 - **Boilerplate responses**: "Thank you for the feedback. I've addressed
   your concern and updated the code accordingly." — without engaging with
   the substance of the review comment
-- **Immediate, perfectly formatted responses**: review responses that
-  appear within seconds and address every point in a structured format
-  suggest the reviewer's comments were fed to an AI agent rather than
-  read and considered
 - **Cannot answer "why" questions**: when asked why they chose a particular
   approach, the contributor deflects, restates what the code does, or
   gives a vague answer
 - **Fixes that don't match the feedback**: the reviewer asks for a
   specific change, and the contributor makes a different but superficially
-  related change, suggesting they passed the feedback through an agent
-  that misunderstood the request
+  related change without explaining why
 
-## How to handle suspected low-quality contributions
+## How to handle quality gaps
 
-The goal is constructive, not adversarial. Many new contributors are
-learning and may lean too heavily on AI assistance without realizing the
-project's expectations.
+The goal is constructive, not adversarial. New contributors may be unfamiliar
+with Node.js internals or project conventions.
 
 ### Ask clarifying questions
 
@@ -176,28 +163,26 @@ Ask specific, technical questions that require understanding of the code:
   test for this change?"
 - "How does this interact with [related subsystem]?"
 
-These questions are good review practice regardless. They serve the dual
-purpose of improving the PR and revealing whether the contributor
-understands their code.
+These questions are good review practice because they expose correctness and
+design gaps while giving the contributor a concrete way to improve the PR.
 
 ### Point to project expectations
 
-If a contributor clearly cannot explain their change:
+If the rationale or implementation remains unclear:
 
-- Link to the [contributing guide](https://github.com/nodejs/node/blob/main/CONTRIBUTING.md)
-- Suggest they study the relevant subsystem before resubmitting
-- Be explicit: "The Node.js project requires contributors to understand
-  and be able to maintain the code they submit. AI tools can help, but
-  you need to own the result."
-- Offer to help them learn — many new contributors just need guidance
+- Link to the [contributing guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/CONTRIBUTING.md)
+  and the relevant subsystem documentation.
+- Ask for a focused explanation, test, benchmark, or code change.
+- Suggest studying the relevant subsystem before resubmitting when needed.
+- Offer specific, actionable guidance tied to the submitted change.
 
 ### Request changes, don't reject outright
 
 - Request changes with specific, actionable feedback
 - If the contribution addresses a real issue, acknowledge that — the
   contributor's intent may be good even if the execution needs work
-- Suggest they build and test locally before resubmitting (many
-  AI-generated PRs have never been compiled)
+- Suggest they build and test locally before resubmitting, and ask for the
+  relevant validation result
 
 ## Node.js review workflow
 
@@ -225,8 +210,8 @@ Reviewed-By: Your Name <your@email.com>
 
 ### When to request changes vs. approve with comments
 
-- **Request changes**: the PR has correctness issues, missing tests, or
-  the contributor needs to demonstrate understanding before it can land
+- **Request changes**: the PR has correctness issues, missing tests, or an
+  unresolved rationale or design gap that blocks landing
 - **Approve with comments**: minor style nits, suggestions for follow-up
   work, or optional improvements. The PR is fundamentally correct and can
   land after the author considers (but doesn't necessarily adopt) your
@@ -249,9 +234,11 @@ Reviewed-By: Your Name <your@email.com>
 
 ## References
 
-- Collaborator guide: `doc/guides/collaborator-guide.md`
-- Contributing guide: `CONTRIBUTING.md`
-- Pull request guide: `doc/guides/pull-requests.md`
+- [Current contributing policy](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/CONTRIBUTING.md)
+- [Pull request and review guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/pull-requests.md)
+- [Collaborator guide](https://github.com/nodejs/node/blob/cf882a79042cba4146acfdb7993b6a97c21e7239/doc/contributing/collaborator-guide.md)
 - Commit message format: [commit-messages.md](commit-messages.md)
+- PR description style:
+  [pull-request-descriptions.md](pull-request-descriptions.md)
 - Build/test workflow: [build-and-test-workflow.md](build-and-test-workflow.md)
 - Primordials: [primordials.md](primordials.md)
