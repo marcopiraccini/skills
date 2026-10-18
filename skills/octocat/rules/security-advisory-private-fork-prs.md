@@ -59,7 +59,7 @@ Confirm the result with `gh pr view <num> --repo "$fork" --json url,baseRefName,
 
 - `POST .../forks` on an advisory that already has a fork returns `403 A repository already exists for this security advisory.` Read `private_fork.full_name` from the advisory instead of retrying.
 - Creating the fork requires write access to the advisory (repository admin, security manager, or advisory collaborator; confirm against the [REST reference](https://docs.github.com/en/rest/security-advisories/repository-advisories#create-a-temporary-private-fork)). A `404` on the advisory means it is unknown or not visible to this token; stop and report rather than probing further.
-- Closing the advisory does not delete the fork or close its PRs. Deleting the fork repository needs the `delete_repo` scope; do not request extra scopes without the user's approval.
+- Publishing the advisory deletes the fork, so fix PRs must be merged upstream first ([lifecycle](security-advisory-lifecycle.md)). Closing the advisory does not delete the fork or close its PRs. Deleting the fork repository needs the `delete_repo` scope; do not request extra scopes without the user's approval.
 - The fork is returned with `"fork": false` and `"private": true`, so do not detect it by the `fork` flag; use the advisory's `private_fork` field.
 
 ## Verification boundary

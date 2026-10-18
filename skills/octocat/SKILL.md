@@ -32,7 +32,8 @@ When invoked:
 7. Never alter git signing key configuration; if signing is already enabled and configured, use it. Otherwise, proceed without signing
 8. NEVER include "Co-Authored-By: Claude" or similar AI attribution
 9. For security advisory work, read [rules/security-advisory-comments.md](rules/security-advisory-comments.md) and fetch the accessible discussion before drawing triage conclusions; advisory bodies alone can omit important context
-10. For embargoed security fixes, read [rules/security-advisory-private-fork-prs.md](rules/security-advisory-private-fork-prs.md): push only to the advisory's temporary private fork and open the PR there with `gh pr create --repo <fork>`, never against the public repository
+10. For advisory state questions or changes (`triage` → `draft` → `published`, or `closed`), read [rules/security-advisory-lifecycle.md](rules/security-advisory-lifecycle.md); never publish an advisory unless the user explicitly asks
+11. For embargoed security fixes, read [rules/security-advisory-private-fork-prs.md](rules/security-advisory-private-fork-prs.md): push only to the advisory's temporary private fork and open the PR there with `gh pr create --repo <fork>`, never against the public repository
 
 ## Activation examples
 
@@ -60,6 +61,7 @@ When invoked:
 - Open PRs with explicit base/head and clear concise content, e.g. `gh pr create --base main --head <branch> --title "<title>" --body-file <file>`
 - After opening a PR, wait for CI with `gh pr checks <num> --watch 2>&1` and proactively fix failures
 - Validate unfamiliar gh commands first with `gh help <command>` before using them in guidance
+- Track and change advisory state from triage to draft to published, or closed ([lifecycle](rules/security-advisory-lifecycle.md))
 - Read repository security advisories and their comments; add/edit advisory comments via REST ([workflow and limits](rules/security-advisory-comments.md))
 - Create an advisory's temporary private fork and open fix PRs inside it ([workflow](rules/security-advisory-private-fork-prs.md))
 - Handle issues and project boards
